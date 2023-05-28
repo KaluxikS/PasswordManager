@@ -1,0 +1,5 @@
+# ninja log v5
+2	395	7069982348110423	CMakeFiles/Password_Manager1.dir/main.cpp.obj	30d2e67929c4b0e
+743	917	7069996638195429	Password_Manager1.exe	b7934a30ec6aec45
+1	118	7070017597337866	build.ninja	5cc8d79056ed29
+2	743	7069996636502266	CMakeFiles/Password_Manager1.dir/PasswordManager.cpp.obj	925590d02dcdcabf

@@ -3,7 +3,7 @@
 
 int main() {
     std::string masterPassword;
-    std::cout << "Podaj haslo: ";
+    std::cout << "Enter password: ";
     std::cin >> masterPassword;
 
     PasswordManager passwordManager(masterPassword);

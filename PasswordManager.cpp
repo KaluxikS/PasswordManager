@@ -21,7 +21,7 @@ void PasswordManager::run() {
 
     while (choice != "7") {
         displayMenu();
-        std::cout << "Wybierz opcje: ";
+        std::cout << "Choose option: ";
         std::cin >> choice;
         processOption(choice);
     }
@@ -114,13 +114,13 @@ std::string PasswordManager::encryptTimestamp() {
 
 void PasswordManager::displayMenu() {
     std::cout << "----- MENU -----" << std::endl;
-    std::cout << "1. Wyszukaj hasla" << std::endl;
-    std::cout << "2. Posortuj hasla" << std::endl;
-    std::cout << "3. Dodaj haslo" << std::endl;
-    std::cout << "4. Edytuj haslo" << std::endl;
-    std::cout << "5. Usun haslo" << std::endl;
-    std::cout << "6. Dodaj / usun kategorie" << std::endl;
-    std::cout << "7. Zakoncz program" << std::endl;
+    std::cout << "1. Search password" << std::endl;
+    std::cout << "2. Sort passwords" << std::endl;
+    std::cout << "3. Add passwords" << std::endl;
+    std::cout << "4. Edit password" << std::endl;
+    std::cout << "5. Delete password" << std::endl;
+    std::cout << "6. Add / delete category" << std::endl;
+    std::cout << "7. End program" << std::endl;
 }
 
 void PasswordManager::processOption(const std::string& choice) {
@@ -138,21 +138,21 @@ void PasswordManager::processOption(const std::string& choice) {
         manageCategories();
     } else if (choice == "7") {
         saveDataToFile();
-        std::cout << "Program zostanie zakonczony." << std::endl;
+        std::cout << "Program will shut down." << std::endl;
     } else if (choice == "8") {
         displayAllPasswords();
     } else {
-        std::cout << "Nieprawidlowa opcja!" << std::endl;
+        std::cout << "Invalid option!" << std::endl;
     }
 }
 
 void PasswordManager::displayAllPasswords() {
-    std::cout << "Wszystkie hasla:" << std::endl;
+    std::cout << "All passwords:" << std::endl;
     for (const Password& password : passwords) {
-        std::cout << "Nazwa: " << password.name << std::endl;
-        std::cout << "Haslo: " << password.password << std::endl;
-        std::cout << "Kategoria: " << password.category << std::endl;
-        std::cout << "Strona WWW: " << password.website << std::endl;
+        std::cout << "Name: " << password.name << std::endl;
+        std::cout << "Password: " << password.password << std::endl;
+        std::cout << "Category: " << password.category << std::endl;
+        std::cout << "Website: " << password.website << std::endl;
         std::cout << "Login: " << password.login << std::endl;
         std::cout << "--------------------------------------" << std::endl;
     }
@@ -185,24 +185,24 @@ void PasswordManager::isPasswordStrong(const std::string &password) {
         }
     }
     if(password.length() >= 8 && hasUppercase && hasLowercase && hasSpecialChar && hasNumber){
-        std::cout << "Twoje haslo jest bezpieczne!\n";
+        std::cout << "Your password is safe!\n";
     }
     else {
-        std::cout << "Twoje haslo nie jest bezpieczne, bo nie zawiera:" << std::endl;
+        std::cout << "Your password is not safe, because it does not contain:" << std::endl;
         if (!hasUppercase) {
-            std::cout << "- wielkiej litery" << std::endl;
+            std::cout << "- capital letter" << std::endl;
         }
         if (!hasLowercase) {
-            std::cout << "- malej litery" << std::endl;
+            std::cout << "- lower case letter" << std::endl;
         }
         if (!hasSpecialChar) {
-            std::cout << "- znaku specjalnego" << std::endl;
+            std::cout << "- special character" << std::endl;
         }
         if (!hasNumber) {
-            std::cout << "- cyfry" << std::endl;
+            std::cout << "- digits" << std::endl;
         }
         if (password.length() < 8) {
-            std::cout << "- ma mniej niz 8 znakow" << std::endl;
+            std::cout << "- has less than 8 characters" << std::endl;
         }
     }
 }
@@ -218,7 +218,6 @@ bool PasswordManager::comparePasswords(const Password &password1, const Password
     } else if (sortBy == "login") {
         return password1.login < password2.login;
     } else {
-        // Domyślnie sortowanie po nazwie
         return password1.name < password2.name;
     }
 }
@@ -239,7 +238,7 @@ std::string PasswordManager::generatePassword(int length, bool includeUppercase,
         charset += specialChars;
 
     if (charset.empty()) {
-        std::cout << "Nie wybrano żadnych opcji dla generowania hasła." << std::endl;
+        std::cout << "You did not choose any options." << std::endl;
         return password;
     }
 
@@ -253,7 +252,7 @@ std::string PasswordManager::generatePassword(int length, bool includeUppercase,
 
 void PasswordManager::searchPasswords() {
     std::string searchParam;
-    std::cout << "Podaj parametr wyszukiwania: ";
+    std::cout << "Enter a search parameter: ";
     std::cin >> searchParam;
 
     std::vector<Password> matchedPasswords;
@@ -268,14 +267,14 @@ void PasswordManager::searchPasswords() {
     }
 
     if (matchedPasswords.empty()) {
-        std::cout << "Nie znaleziono hasel pasujacych do podanego parametru." << std::endl;
+        std::cout << "Did not find any password matching to the parameter." << std::endl;
     } else {
-        std::cout << "Znalezione hasla:" << std::endl;
+        std::cout << "Found passwords:" << std::endl;
         for (const Password& password : matchedPasswords) {
-            std::cout << "Nazwa: " << password.name << std::endl;
-            std::cout << "Haslo: " << password.password << std::endl;
-            std::cout << "Kategoria: " << password.category << std::endl;
-            std::cout << "Strona WWW: " << password.website << std::endl;
+            std::cout << "Name: " << password.name << std::endl;
+            std::cout << "Password: " << password.password << std::endl;
+            std::cout << "Category: " << password.category << std::endl;
+            std::cout << "Website: " << password.website << std::endl;
             std::cout << "Login: " << password.login << std::endl;
             std::cout << "--------------------------------------" << std::endl;
         }
@@ -284,57 +283,55 @@ void PasswordManager::searchPasswords() {
 
 void PasswordManager::sortPasswords() {
     std::string sortBy;
-    std::cout << "Wybierz parametr sortowania (name, category, website, login): ";
+    std::cout << "Choose sorting parameter (name, category, website, login): ";
     std::cin >> sortBy;
 
-    // Sprawdzenie poprawności sortBy
     if (sortBy != "name" && sortBy != "category" && sortBy != "website" && sortBy != "login") {
-        std::cout << "Nieprawidlowy parametr sortowania!" << std::endl;
+        std::cout << "Wrong sorting parameter!" << std::endl;
         return;
     }
 
-    // Sortowanie haseł
     std::sort(passwords.begin(), passwords.end(), [sortBy, this](const Password& password1, const Password& password2) {
         return comparePasswords(password1, password2, sortBy);
     });
 
-    std::cout << "Hasla zostaly posortowane." << std::endl;
+    std::cout << "Passwords sorted." << std::endl;
 }
 
 std::string PasswordManager::addSinglePasswordString() {
     std::string choice;
     std::string password;
-    std::cout << "Czy chcesz wygenerowac haslo automatycznie? (t/n): ";
+    std::cout << "Would you like to generate your password automatically? (y/n): ";
     std::cin >> choice;
 
-    if (choice == "t") {
+    if (choice == "y") {
         int length;
         bool includeUppercase;
         bool includeLowercase;
         bool includeSpecialChars;
 
-        std::cout << "Podaj dlugosc hasla: ";
+        std::cout << "Enter password length: ";
         std::cin >> length;
 
-        std::cout << "Czy haslo powinno zawierac wielkie litery? (t/n): ";
+        std::cout << "Should it contain capital letters? (y/n): ";
         std::cin >> choice;
-        includeUppercase = (choice == "t");
+        includeUppercase = (choice == "y");
 
-        std::cout << "Czy haslo powinno zawierac male litery? (t/n): ";
+        std::cout << "Should it contain small case letters? (y/n): ";
         std::cin >> choice;
-        includeLowercase = (choice == "t");
+        includeLowercase = (choice == "y");
 
-        std::cout << "Czy haslo powinno zawierac znaki specjalne? (t/n): ";
+        std::cout << "Should it contain special characters? (y/n): ";
         std::cin >> choice;
-        includeSpecialChars = (choice == "t");
+        includeSpecialChars = (choice == "y");
 
         password = generatePassword(length, includeUppercase, includeLowercase, includeSpecialChars);
-        std::cout << "Wygenerowane haslo to: " << password << std::endl;
+        std::cout << "Generated password: " << password << std::endl;
     } else {
-        std::cout << "Podaj haslo: ";
+        std::cout << "Enter password: ";
         std::cin >> password;
         if (isAlreadyUsed(passwordsString, password)) {
-            std::cout << "Uzyles juz tego hasla, mozesz je zedytowac pozniej.\n";
+            std::cout << "You have used this password. You can edit it later.\n";
         }
         isPasswordStrong(password);
         passwordsString.push_back(password);
@@ -349,18 +346,18 @@ void PasswordManager::addPassword() {
     std::string website;
     std::string login;
 
-    std::cout << "Podaj nazwe hasla: ";
+    std::cout << "Enter password name: ";
     std::cin >> name;
 
     password = addSinglePasswordString();
 
-    std::cout << "Podaj kategorie: ";
+    std::cout << "Enter category: ";
     std::cin >> category;
 
-    std::cout << "Podaj strone WWW (opcjonalnie): ";
+    std::cout << "Enter website (optional): ";
     std::cin >> website;
 
-    std::cout << "Podaj login (opcjonalnie): ";
+    std::cout << "Enter login (optional): ";
     std::cin >> login;
 
     Password newPassword;
@@ -372,59 +369,58 @@ void PasswordManager::addPassword() {
 
     passwords.push_back(newPassword);
 
-    std::cout << "Haslo zostalo dodane." << std::endl;
+    std::cout << "Password added." << std::endl;
 }
 
 void PasswordManager::editPassword() {
     std::string name;
-    std::cout << "Podaj nazwę hasła do edycji: ";
+    std::cout << "Enter password name to edit: ";
     std::cin >> name;
 
-    // Sprawdzenie, czy istnieje hasło o podanej nazwie
     bool passwordExists = false;
     for (Password& password : passwords) {
         if (password.name == name) {
             passwordExists = true;
 
-            std::cout << "Wybierz pole do edycji: " << std::endl;
-            std::cout << "1. Nazwa" << std::endl;
-            std::cout << "2. Haslo" << std::endl;
-            std::cout << "3. Kategoria" << std::endl;
-            std::cout << "4. Strona WWW" << std::endl;
+            std::cout << "Choose field to edit: " << std::endl;
+            std::cout << "1. Name" << std::endl;
+            std::cout << "2. Password" << std::endl;
+            std::cout << "3. Category" << std::endl;
+            std::cout << "4. Website" << std::endl;
             std::cout << "5. Login" << std::endl;
-            std::cout << "Wybierz opcje: ";
+            std::cout << "Choose option: ";
             std::string option;
             std::cin >> option;
 
             if (option == "1") {
-                std::cout << "Podaj nowa nazwe: ";
+                std::cout << "Enter new name: ";
                 std::cin >> password.name;
-                std::cout << "Nazwa zostala zaktualizowana." << std::endl;
+                std::cout << "Name changed." << std::endl;
             } else if (option == "2") {
-                std::string newPassword;
+                //std::string newPassword;
                 password.password = addSinglePasswordString();
-                std::cout << "Haslo zostało zaktualizowane." << std::endl;
+                std::cout << "Password changed." << std::endl;
             } else if (option == "3") {
-                std::cout << "Podaj nową kategorię: ";
+                std::cout << "Enter new category: ";
                 std::cin >> password.category;
-                std::cout << "Kategoria została zaktualizowana." << std::endl;
+                std::cout << "Category changed." << std::endl;
             } else if (option == "4") {
-                std::cout << "Podaj nowa stronę WWW: ";
+                std::cout << "Enter new website: ";
                 std::cin >> password.website;
-                std::cout << "Strona WWW została zaktualizowana." << std::endl;
+                std::cout << "Website changed." << std::endl;
             } else if (option == "5") {
-                std::cout << "Podaj nowy login: ";
+                std::cout << "Enter new login: ";
                 std::cin >> password.login;
-                std::cout << "Login został zaktualizowany." << std::endl;
+                std::cout << "Login changed." << std::endl;
             } else {
-                std::cout << "Nieprawidlowa opcja!" << std::endl;
+                std::cout << "Wrong option!" << std::endl;
             }
             break;
         }
     }
 
     if (!passwordExists) {
-        std::cout << "Nie znaleziono hasła o podanej nazwie." << std::endl;
+        std::cout << "Could not find password with choosen name." << std::endl;
     }
 }
 

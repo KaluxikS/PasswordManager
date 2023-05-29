@@ -13,7 +13,7 @@ PasswordManager::PasswordManager(const std::string& masterPassword)
 
 void PasswordManager::run() {
 //    if(masterPassword != "d"){
-//        std::cout << "Podano zle haslo!";
+//        std::cout << "Wrong password!!";
 //        exit(0);
 //    }
     loadDataFromFile();

@@ -23,9 +23,10 @@ private:
     std::vector<std::string> passwordsString;
     std::string masterPassword;
     std::string filename;
+    std::vector<std::string> categories;
 
 public:
-    PasswordManager(const std::string& masterPassword);
+    PasswordManager(std::string masterPassword);
 
     void run();
 
@@ -44,8 +45,11 @@ private:
     void addPassword();
     void editPassword();
     void deletePassword();
-    void manageCategories();
+    void addCategory();
+    void removeCategory();
+    void showCategory();
     void displayAllPasswords();
+    bool isCategoryExists(const std::string& category);
     std::string addSinglePasswordString();
     bool isAlreadyUsed(const std::vector<std::string>& vec, const std::string& str);
     void isPasswordStrong(const std::string& password);

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <ctime>
 
-PasswordManager::PasswordManager(const std::string& masterPassword)
+PasswordManager::PasswordManager(std::string masterPassword)
         : filename("passwords.txt"), masterPassword(masterPassword) {
 }
 
@@ -19,7 +19,7 @@ void PasswordManager::run() {
     loadDataFromFile();
     std::string choice = " ";
 
-    while (choice != "7") {
+    while (choice != "10") {
         displayMenu();
         std::cout << "Choose option: ";
         std::cin >> choice;
@@ -76,6 +76,7 @@ Password PasswordManager::decryptPassword(const std::string& encryptedLine) {
 
     pos = encryptedData.find(';');
     password.category = decrypt(encryptedData.substr(0, pos));
+    categories.push_back(password.category);
     encryptedData.erase(0, pos + 1);
 
     pos = encryptedData.find(';');
@@ -113,14 +114,19 @@ std::string PasswordManager::encryptTimestamp() {
 }
 
 void PasswordManager::displayMenu() {
-    std::cout << "----- MENU -----" << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "Choose what to do!" << std::endl;
     std::cout << "1. Search password" << std::endl;
     std::cout << "2. Sort passwords" << std::endl;
     std::cout << "3. Add passwords" << std::endl;
     std::cout << "4. Edit password" << std::endl;
     std::cout << "5. Delete password" << std::endl;
-    std::cout << "6. Add / delete category" << std::endl;
-    std::cout << "7. End program" << std::endl;
+    std::cout << "6. Show all passwords" << std::endl;
+    std::cout << "7. Show all categories" << std::endl;
+    std::cout << "8. Add category" << std::endl;
+    std::cout << "9. Delete category" << std::endl;
+    std::cout << "10. End program" << std::endl;
+    std::cout << "-------------------------------" << std::endl;
 }
 
 void PasswordManager::processOption(const std::string& choice) {
@@ -135,13 +141,18 @@ void PasswordManager::processOption(const std::string& choice) {
     } else if (choice == "5") {
         deletePassword();
     } else if (choice == "6") {
-        manageCategories();
+        displayAllPasswords();
     } else if (choice == "7") {
+        showCategory();
+    } else if (choice == "8") {
+        addCategory();
+    } else if (choice == "9") {
+        removeCategory();
+    } else if (choice == "10") {
         saveDataToFile();
         std::cout << "Program will shut down." << std::endl;
-    } else if (choice == "8") {
-        displayAllPasswords();
-    } else {
+    }
+    else {
         std::cout << "Invalid option!" << std::endl;
     }
 }
@@ -229,7 +240,7 @@ std::string PasswordManager::generatePassword(int length, bool includeUppercase,
     std::string lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
     std::string specialChars = "!@#$%^&*()_+-={}[]|\\:;\"'<>,.?/";
 
-    std::string charset = "";
+    std::string charset;
     if (includeUppercase)
         charset += uppercaseChars;
     if (includeLowercase)
@@ -351,8 +362,14 @@ void PasswordManager::addPassword() {
 
     password = addSinglePasswordString();
 
+
     std::cout << "Enter category: ";
     std::cin >> category;
+    if(!isCategoryExists(category)){
+        std::cout << "Category does not exist! Add it by choosing 8.\n Quiting password adding! \n \n";
+        return;
+    }
+
 
     std::cout << "Enter website (optional): ";
     std::cin >> website;
@@ -397,12 +414,15 @@ void PasswordManager::editPassword() {
                 std::cin >> password.name;
                 std::cout << "Name changed." << std::endl;
             } else if (option == "2") {
-                //std::string newPassword;
                 password.password = addSinglePasswordString();
                 std::cout << "Password changed." << std::endl;
             } else if (option == "3") {
                 std::cout << "Enter new category: ";
                 std::cin >> password.category;
+                if(!isCategoryExists(password.category)){
+                    std::cout << "Category does not exist! Add it by choosing 8.\n Quiting password adding! \n \n";
+                    return;
+                }
                 std::cout << "Category changed." << std::endl;
             } else if (option == "4") {
                 std::cout << "Enter new website: ";
@@ -420,14 +440,83 @@ void PasswordManager::editPassword() {
     }
 
     if (!passwordExists) {
-        std::cout << "Could not find password with choosen name." << std::endl;
+        std::cout << "Could not find password with chosen name." << std::endl;
     }
 }
 
+
 void PasswordManager::deletePassword() {
-    // Usuwanie wybranego hasła
+    std::string name;
+    std::cout << "Enter password name to delete: ";
+    std::cin >> name;
+
+    bool passwordExists = false;
+    for (auto it = passwords.begin(); it != passwords.end(); it++) {
+        if (it->name == name) {
+            passwordExists = true;
+            std::cout << "Are you sure you want to delete the password for '" << it->name << "'? (y/n): ";
+            std::string choice;
+            std::cin >> choice;
+
+            if (choice == "y") {
+                passwords.erase(it);
+                std::cout << "Password deleted." << std::endl;
+            } else {
+                std::cout << "Deletion canceled." << std::endl;
+            }
+            break;
+        }
+    }
+
+    if (!passwordExists) {
+        std::cout << "Password with the name '" << name << "' not found." << std::endl;
+    }
 }
 
-void PasswordManager::manageCategories() {
-    // Dodawanie i usuwanie kategorii
+bool PasswordManager::isCategoryExists(const std::string& category) {
+    return std::find(categories.begin(), categories.end(), category) != categories.end();
+}
+
+void PasswordManager::addCategory() {
+    std::string category;
+    std::cout << "Enter category name to add: ";
+    std::cin >> category;
+    if (isCategoryExists(category)) {
+        std::cout << "Category '" << category << "' already exists." << std::endl;
+    } else {
+        categories.push_back(category);
+        std::cout << "Category '" << category << "' added." << std::endl;
+    }
+}
+
+void PasswordManager::removeCategory() {
+    std::string category;
+    std::cout << "Enter category name to remove: ";
+    std::cin >> category;
+    if (!isCategoryExists(category)) {
+        std::cout << "Kategoria '" << category << "' nie istnieje." << std::endl;
+        return;
+    }
+    for (auto it = passwords.begin(); it != passwords.end(); ) {
+        if (it->category == category) {
+            it = passwords.erase(it);
+        } else {
+            it++;
+        }
+    }
+    categories.erase(std::remove(categories.begin(), categories.end(), category), categories.end());
+
+    std::cout << "Kategoria '" << category << "' została usunięta wraz ze wszystkimi powiązanymi hasłami." << std::endl;
+}
+
+
+void PasswordManager::showCategory() {
+    if (categories.empty()) {
+        std::cout << "There is no categories!." << std::endl;
+    } else {
+        std::cout << "List of categories:" << std::endl;
+        for (const auto& category : categories) {
+            std::cout << "- " << category << std::endl;
+        }
+    }
 }

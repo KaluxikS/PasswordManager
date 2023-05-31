@@ -12,20 +12,51 @@ PasswordManager::PasswordManager(std::string masterPassword)
 }
 
 void PasswordManager::run() {
-//    if(masterPassword != "d"){
-//        std::cout << "Wrong password!!";
-//        exit(0);
-//    }
+    if(masterPassword != "d"){
+        std::cout << "Wrong password!!";
+        logAttempt();
+        exit(0);
+    }
     loadDataFromFile();
-    std::string choice = " ";
+    std::string choice;
 
-    while (choice != "10") {
+    while (choice != "11") {
         displayMenu();
         std::cout << "Choose option: ";
         std::cin >> choice;
         processOption(choice);
     }
 
+}
+
+void PasswordManager::logAttempt() {
+    std::ofstream logFile("logs.txt", std::ios::app);
+    if (logFile.is_open()) {
+        std::time_t now = std::time(nullptr);
+        std::string timestamp = std::ctime(&now);
+        std::string saveLog;
+        timestamp.pop_back();  // Remove the newline character from the timestamp
+        saveLog = "Failed attempt at " + timestamp;
+
+        logFile << encrypt(saveLog) << std::endl;
+        logFile.close();
+    } else {
+        std::cout << "Error opening log file." << std::endl;
+    }
+}
+
+void PasswordManager::readLogFile() {
+    std::ifstream logFile("logs.txt");
+    if (logFile.is_open()) {
+        std::string encryptedLog;
+        while (std::getline(logFile, encryptedLog)) {
+            std::string decryptedLog = decrypt(encryptedLog);
+            std::cout << decryptedLog << std::endl;
+        }
+        logFile.close();
+    } else {
+        std::cout << "Error opening log file." << std::endl;
+    }
 }
 
 void PasswordManager::loadDataFromFile() {
@@ -107,11 +138,6 @@ std::string PasswordManager::decrypt(std::string encryptedData) {
     return encryptedData;
 }
 
-std::string PasswordManager::encryptTimestamp() {
-    std::time_t timestamp = std::time(nullptr);
-    std::string timestampStr = std::to_string(timestamp);
-    return encrypt(timestampStr);
-}
 
 void PasswordManager::displayMenu() {
     std::cout << "-------------------------------" << std::endl;
@@ -125,7 +151,8 @@ void PasswordManager::displayMenu() {
     std::cout << "7. Show all categories" << std::endl;
     std::cout << "8. Add category" << std::endl;
     std::cout << "9. Delete category" << std::endl;
-    std::cout << "10. End program" << std::endl;
+    std::cout << "10. See logs" << std::endl;
+    std::cout << "11. End program" << std::endl;
     std::cout << "-------------------------------" << std::endl;
 }
 
@@ -149,6 +176,8 @@ void PasswordManager::processOption(const std::string& choice) {
     } else if (choice == "9") {
         removeCategory();
     } else if (choice == "10") {
+        readLogFile();
+    } else if (choice == "11") {
         saveDataToFile();
         std::cout << "Program will shut down." << std::endl;
     }
@@ -306,7 +335,7 @@ void PasswordManager::sortPasswords() {
         return comparePasswords(password1, password2, sortBy);
     });
 
-    std::cout << "Passwords sorted." << std::endl;
+    std::cout << "Passwords sorted by " << sortBy << "." << std::endl;
 }
 
 std::string PasswordManager::addSinglePasswordString() {
@@ -321,8 +350,17 @@ std::string PasswordManager::addSinglePasswordString() {
         bool includeLowercase;
         bool includeSpecialChars;
 
-        std::cout << "Enter password length: ";
-        std::cin >> length;
+        while (true) {
+            std::cout << "Enter password length: ";
+            std::cin >> length;
+            if(!std::cin){
+                std::cin.clear();
+                std::cin.sync();
+                std::cout << "Please enter number!" << std::endl;
+            }else {
+                break;
+            }
+        }
 
         std::cout << "Should it contain capital letters? (y/n): ";
         std::cin >> choice;
@@ -342,7 +380,7 @@ std::string PasswordManager::addSinglePasswordString() {
         std::cout << "Enter password: ";
         std::cin >> password;
         if (isAlreadyUsed(passwordsString, password)) {
-            std::cout << "You have used this password. You can edit it later.\n";
+            std::cout << "You have used this password. You can edit it later." << std::endl;
         }
         isPasswordStrong(password);
         passwordsString.push_back(password);
@@ -494,7 +532,7 @@ void PasswordManager::removeCategory() {
     std::cout << "Enter category name to remove: ";
     std::cin >> category;
     if (!isCategoryExists(category)) {
-        std::cout << "Kategoria '" << category << "' nie istnieje." << std::endl;
+        std::cout << "Category '" << category << "' does not exist." << std::endl;
         return;
     }
     for (auto it = passwords.begin(); it != passwords.end(); ) {
@@ -506,7 +544,7 @@ void PasswordManager::removeCategory() {
     }
     categories.erase(std::remove(categories.begin(), categories.end(), category), categories.end());
 
-    std::cout << "Kategoria '" << category << "' została usunięta wraz ze wszystkimi powiązanymi hasłami." << std::endl;
+    std::cout << "Category '" << category << "' has been removed with all related passwords." << std::endl;
 }
 
 

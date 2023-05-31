@@ -25,6 +25,7 @@ private:
     std::string filename;
     std::vector<std::string> categories;
 
+
 public:
     PasswordManager(std::string masterPassword);
 
@@ -33,12 +34,11 @@ public:
 private:
     void loadDataFromFile();
     void saveDataToFile();
-    std::string encryptPassword(const Password& password);
+    static std::string encryptPassword(const Password& password);
     Password decryptPassword(const std::string& encryptedLine);
-    std::string encrypt(std::string data);
-    std::string decrypt(std::string encryptedData);
-    std::string encryptTimestamp();
-    void displayMenu();
+    static std::string encrypt(std::string data);
+    static std::string decrypt(std::string encryptedData);
+    static void displayMenu();
     void processOption(const std::string& choice);
     void searchPasswords();
     void sortPasswords();
@@ -51,10 +51,12 @@ private:
     void displayAllPasswords();
     bool isCategoryExists(const std::string& category);
     std::string addSinglePasswordString();
-    bool isAlreadyUsed(const std::vector<std::string>& vec, const std::string& str);
-    void isPasswordStrong(const std::string& password);
-    std::string generatePassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars);
-    bool comparePasswords(const Password& password1, const Password& password2, const std::string& sortBy);
+    static bool isAlreadyUsed(const std::vector<std::string>& vec, const std::string& str);
+    static void isPasswordStrong(const std::string& password);
+    static std::string generatePassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars);
+    static bool comparePasswords(const Password& password1, const Password& password2, const std::string& sortBy);
+    void logAttempt();
+    void readLogFile();
 };
 
 #endif // PASSWORD_MANAGER_H

@@ -3,7 +3,7 @@
 
 int main() {
     std::string masterPassword;
-    std::cout << "Enter password: ";
+    std::cout << "Enter password: "; //test commit
     std::cin >> masterPassword;
 
     PasswordManager passwordManager(masterPassword);

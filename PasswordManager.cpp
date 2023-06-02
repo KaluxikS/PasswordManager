@@ -7,11 +7,12 @@
 #include <fstream>
 #include <ctime>
 
-PasswordManager::PasswordManager(std::string masterPassword)
-        : filename("passwords.txt"), masterPassword(masterPassword) {
+PasswordManager::PasswordManager(std::string masterPassword, std::string filename)
+        : filename(filename), masterPassword(masterPassword) {
 }
 
 void PasswordManager::run() {
+    srand( time( NULL ) );
     if(masterPassword != "d"){
         std::cout << "Wrong password!!";
         logAttempt();
@@ -36,7 +37,7 @@ void PasswordManager::logAttempt() {
         std::string timestamp = std::ctime(&now);
         std::string saveLog;
         timestamp.pop_back();  // Remove the newline character from the timestamp
-        saveLog = "Failed attempt at " + timestamp;
+        saveLog = "Failed attempt at " + timestamp + " to file: " + filename;
 
         logFile << encrypt(saveLog) << std::endl;
         logFile.close();
@@ -107,7 +108,9 @@ Password PasswordManager::decryptPassword(const std::string& encryptedLine) {
 
     pos = encryptedData.find(';');
     password.category = decrypt(encryptedData.substr(0, pos));
-    categories.push_back(password.category);
+
+    if(!isCategoryExists(password.category))
+        categories.push_back(password.category);
     encryptedData.erase(0, pos + 1);
 
     pos = encryptedData.find(';');
@@ -198,7 +201,7 @@ void PasswordManager::displayAllPasswords() {
     }
 }
 
-bool PasswordManager::isAlreadyUsed(const std::vector<std::string> &vec, const std::string &str) {
+bool PasswordManager::isPasswordAlreadyUsed(const std::vector<std::string> &vec, const std::string &str) {
     for (const auto& element : vec) {
         if (element == str) {
             return true;
@@ -279,11 +282,11 @@ std::string PasswordManager::generatePassword(int length, bool includeUppercase,
 
     if (charset.empty()) {
         std::cout << "You did not choose any options." << std::endl;
-        return password;
+        return "default password";
     }
 
     for (int i = 0; i < length; ++i) {
-        int randomIndex = rand() % charset.length();
+        int randomIndex = std::rand() % charset.length();
         password += charset[randomIndex];
     }
 
@@ -379,7 +382,7 @@ std::string PasswordManager::addSinglePasswordString() {
     } else {
         std::cout << "Enter password: ";
         std::cin >> password;
-        if (isAlreadyUsed(passwordsString, password)) {
+        if (isPasswordAlreadyUsed(passwordsString, password)) {
             std::cout << "You have used this password. You can edit it later." << std::endl;
         }
         isPasswordStrong(password);
@@ -401,8 +404,13 @@ void PasswordManager::addPassword() {
     password = addSinglePasswordString();
 
 
-    std::cout << "Enter category: ";
+    std::cout << "Enter category: (if you want to see possible categories type \"list\": ";
     std::cin >> category;
+    if(category == "list"){
+        showCategory();
+        std::cout << "Enter category: " << std::endl;
+        std::cin >> category;
+    }
     if(!isCategoryExists(category)){
         std::cout << "Category does not exist! Add it by choosing 8.\n Quiting password adding! \n \n";
         return;

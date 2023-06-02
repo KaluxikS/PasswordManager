@@ -1,0 +1,3 @@
+C:/Users/Piotr/Desktop/PasswordManager/cmake-build-debug/CMakeFiles/Password_Manager1.dir
+C:/Users/Piotr/Desktop/PasswordManager/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Piotr/Desktop/PasswordManager/cmake-build-debug/CMakeFiles/rebuild_cache.dir
